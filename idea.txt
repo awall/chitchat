@@ -1,0 +1,25 @@
+
+// invoke like  echo "Main.cc" | cc "Hello World of Macros!"
+
+foreach somelist #a [
+  set _ * 2 a
+  print [++ "the answer was: " _]
+]
+
+print [* 2 5]
+
+print [
+  print "you suck"
+  2 * 5  
+]
+
+foreach somelist #a[* 2 a]
+
+set say-hi #[
+  set name "Jack" 
+  set $ [++ "Name is: " name]
+  print-line $
+]
+
+compile say-hi "hello_world.exe"
+
