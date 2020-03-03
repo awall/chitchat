@@ -1,12 +1,13 @@
+--
+-- After some quick comparisons, settled on using Megaparsec for parsing.
+-- See https://github.com/mrkkrp/megaparsec#comparison-with-other-solutions for comparison of alternatives.
+--
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE ViewPatterns #-}
 
---
--- Consider other methods for parsing: https://github.com/mrkkrp/megaparsec#comparison-with-other-solutions
---
-
-module Main 
-  where
+module ChitChat.Ast
+  ( commandP
+  ) where
 
 import Control.Monad.State
 import Data.Char
@@ -101,34 +102,6 @@ funCallP = do
 funCallsP :: Parser [Ast FunCallT]
 funCallsP = sepEndBy1 funCallP (char '\n' >> lfmunch)
 
+commandP :: Parser (Ast FunCallT)
+commandP = funCallP <* lfmunch <* eof
 
-
-
-mainp :: Parser (Ast FunCallT)
-mainp = funCallP <* lfmunch <* eof
-
-main' :: IORef String -> IO ()
-main' buffer = do
-  input <- liftIO $ getLine
-  modifyIORef buffer (++ input)
-  when (endsWithSemicolon input) (do
-    fullValue <- readIORef buffer
-    writeIORef buffer ""
-    let sansSemicolon = withoutLastChar fullValue
-    case (parse mainp "stdin" sansSemicolon) of    
-      Left  error -> putStrLn ("ERROR: " ++ show error)
-      Right _ -> putStrLn "PARSED!")
-
-  main' buffer
-  where
-    endsWithSemicolon "" = False
-    endsWithSemicolon ";" = True
-    endsWithSemicolon (x:xs) = endsWithSemicolon xs
-    withoutLastChar' accum [x] = accum
-    withoutLastChar' accum (x:xs) = withoutLastChar' (accum ++ [x]) xs
-    withoutLastChar x = withoutLastChar' "" x
-
-main :: IO ()
-main = do 
-  buffer <- newIORef ""
-  main' buffer

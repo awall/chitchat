@@ -20,17 +20,29 @@ description:         Please see the README on GitHub at <https://github.com/awal
 
 dependencies:
 - base >= 4.7 && < 5
+- bytestring
 - containers
 - mtl
 - megaparsec
+- network >= 3
 - text
+- utf8-string
 
 
 executables:
-  chitchat:
-    main:                _Main.hs
+  ccc:
+    main:                ChitChat/Exe/Client.hs
     source-dirs:         src
     ghc-options:
     - -threaded
     - -rtsopts
+    - -main-is ChitChat.Exe.Client
+    - -with-rtsopts=-N
+  ccs:
+    main:                ChitChat/Exe/Server.hs
+    source-dirs:         src
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -main-is ChitChat.Exe.Server
     - -with-rtsopts=-N
